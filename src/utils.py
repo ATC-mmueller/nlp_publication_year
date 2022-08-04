@@ -29,3 +29,15 @@ def csv_to_dict(author):
     for title in d['titles']:
         d['titles'][title]['chapters'] = list(d['titles'][title]['chapters'].values())
     return d
+    
+def load_csv(relative_path):
+    import os
+    from ast import literal_eval
+    from pandas import read_csv
+    if os.path.isfile(relative_path):
+        df = pd_read_csv(relative_path)
+        if 'lemma' in df.columns.tolist():
+            df['lemma'] = df.lemma.apply(lambda x: literal_eval(x))
+        return df
+    else:
+        return 'No csv-file with that name found. Check for spelling errors.'

@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 def scrape_titles(author_url : str) -> list:
     url = 'https://www.projekt-gutenberg.org/autoren/namen/' + author_url + '.html'
@@ -81,3 +82,17 @@ def scrape_death_year(author_url : str) -> int:
         if 'deaths' in cat.get_text():
             return cat.get_text()[:4]
     return 0
+
+def scrape_author_url(author : str) -> str:
+    url = 'https://www.projekt-gutenberg.org/autoren/info/autor-az.html'
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, 'html.parser')
+    gutenberg_dict = {}
+    for a in soup.select('ol a'):
+        author_name = re.sub('\s+', ' ', a.get_text())
+        gutenberg_dict[author_name] = a['href']
+    for name in gutenberg_dict:
+        if author.rsplit(' ')[-1] in name:
+            if a.split(' ')[0] in name:
+                return gutenberg_dict[name]
+    return ''
